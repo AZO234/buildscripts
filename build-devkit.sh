@@ -28,12 +28,50 @@ echo
 
 
 
+LIBGBA_VER=0.5.2
+GBATOOLS_VER=1.2.0
 DKARM_RULES_VER=1.2.0
 DKARM_CRTLS_VER=1.0.0
 
+LIBNDS_VER=1.7.3
+DEFAULT_ARM7_VER=0.7.4
+DSWIFI_VER=0.4.2
+MAXMOD_VER=1.0.12
+FILESYSTEM_VER=0.9.14
+LIBFAT_VER=1.1.4
+DSTOOLS_VER=1.2.1
+GRIT_VER=0.8.16
+NDSTOOL_VER=2.1.2
+MMUTIL_VER=1.8.7
+
+DFU_UTIL_VER=0.9.1
+STLINK_VER=1.2.3
+
+GAMECUBE_TOOLS_VER=1.0.2
+LIBOGC_VER=1.8.23
+WIILOAD_VER=0.5.1
 DKPPC_RULES_VER=1.0.0
 
 DKA64_RULES_VER=1.0.0
+LIBCTRU_VER=1.5.1
+CITRO3D_VER=1.5.0
+#CITRO2D_VER=1.2.0
+CITRO2D_VER=1.1.0
+TOOLS3DS_VER=1.1.4
+LINK3DS_VER=0.5.2
+PICASSO_VER=2.7.0
+#TEX3DS_VER=2.0.1
+TEX3DS_VER=1.0.1
+
+GP32_TOOLS_VER=1.0.3
+LIBMIRKO_VER=0.9.8
+
+SWITCH_TOOLS_VER=1.6.1
+#LIBNX_VER=3.1.0
+LIBNX_VER=2.1.0
+
+#GENERAL_TOOLS_VER=1.0.3
+GENERAL_TOOLS_VER=1.0.2
 
 OSXMIN=${OSXMIN:-10.9}
 
@@ -181,16 +219,41 @@ fi
 patchdir=$(pwd)/$basedir/patches
 scriptdir=$(pwd)/$basedir/scripts
 
-archives="binutils-${BINUTILS_VER}.tar.xz gcc-${GCC_VER}.tar.xz newlib-${NEWLIB_VER}.tar.gz"
+archives="binutils-${BINUTILS_VER}.tar.xz gcc-${GCC_VER}.tar.xz newlib-${NEWLIB_VER}.tar.gz gdb-${GDB_VER}.tar.xz"
 
-if [ $VERSION -eq 2 ]; then
-	archives="binutils-${MN_BINUTILS_VER}.tar.bz2 $archives"
+if [ $VERSION -eq 1 ]; then
+
+	targetarchives="libnds-src-${LIBNDS_VER}.tar.bz2 libgba-src-${LIBGBA_VER}.tar.bz2
+		libmirko-src-${LIBMIRKO_VER}.tar.bz2 dswifi-src-${DSWIFI_VER}.tar.bz2 maxmod-src-${MAXMOD_VER}.tar.bz2
+		default-arm7-src-${DEFAULT_ARM7_VER}.tar.bz2 libfilesystem-src-${FILESYSTEM_VER}.tar.bz2
+		libfat-src-${LIBFAT_VER}.tar.bz2 libctru-src-${LIBCTRU_VER}.tar.bz2  citro3d-src-${CITRO3D_VER}.tar.bz2
+		citro2d-src-${CITRO2D_VER}.tar.bz2"
+
+	hostarchives="gba-tools-$GBATOOLS_VER.tar.bz2 gp32-tools-$GP32_TOOLS_VER.tar.bz2
+		dstools-$DSTOOLS_VER.tar.bz2 grit-$GRIT_VER.tar.bz2 ndstool-$NDSTOOL_VER.tar.bz2
+		general-tools-$GENERAL_TOOLS_VER.tar.bz2 mmutil-$MMUTIL_VER.tar.bz2
+		dfu-util-$DFU_UTIL_VER.tar.bz2 stlink-$STLINK_VER.tar.bz2 3dstools-$TOOLS3DS_VER.tar.bz2
+		picasso-$PICASSO_VER.tar.bz2 tex3ds-$TEX3DS_VER.tar.bz2 3dslink-$LINK3DS_VER.tar.bz2"
+
+	archives="devkitarm-rules-$DKARM_RULES_VER.tar.xz devkitarm-crtls-$DKARM_CRTLS_VER.tar.xz $archives"
 fi
 
-if [ "$BUILD_DKPRO_SKIP_CRTLS" != "1" ]; then
-	if [ $VERSION -eq 1 ]; then
-		archives="devkitarm-rules-$DKARM_RULES_VER.tar.xz devkitarm-crtls-$DKARM_CRTLS_VER.tar.xz $archives"
-	fi
+if [ $VERSION -eq 2 ]; then
+
+	targetarchives="libogc-src-${LIBOGC_VER}.tar.bz2 libfat-src-${LIBFAT_VER}.tar.bz2"
+
+	hostarchives="gamecube-tools-$GAMECUBE_TOOLS_VER.tar.bz2 wiiload-$WIILOAD_VER.tar.bz2 general-tools-$GENERAL_TOOLS_VER.tar.bz2"
+
+	archives="binutils-${MN_BINUTILS_VER}.tar.bz2 devkitppc-rules-$DKPPC_RULES_VER.tar.xz $archives"
+fi
+
+if [ $VERSION -eq 3 ]; then
+
+	targetarchives=" libnx-src-${LIBNX_VER}.tar.bz2"
+
+	hostarchives="general-tools-$GENERAL_TOOLS_VER.tar.bz2 switch-tools-$SWITCH_TOOLS_VER.tar.bz2"
+
+fi
 
 	if [ $VERSION -eq 2 ]; then
 		archives="devkitppc-rules-$DKPPC_RULES_VER.tar.xz $archives"
@@ -208,7 +271,7 @@ else
 fi
 
 cd "$SRCDIR"
-for archive in $archives
+for archive in $archives $targetarchives $hostarchives
 do
 	echo $archive
 	if [ ! -f $archive ]; then
@@ -226,14 +289,35 @@ extract_and_patch newlib $NEWLIB_VER gz
 
 if [ $VERSION -eq 2 ]; then extract_and_patch binutils $MN_BINUTILS_VER bz2; fi
 
+for archive in $targetarchives
+do
+	destdir=$(echo $archive | sed -e 's/\(.*\)-src-\(.*\)\.tar\.bz2/\1-\2/' )
+	echo $destdir
+	if [ ! -d $destdir ]; then
+		mkdir -p $destdir
+		bzip2 -cd "$SRCDIR/$archive" | tar -xf - -C $destdir || { echo "Error extracting "$archive; exit 1; }
+	fi
+done
+
+for archive in $hostarchives
+do
+	destdir=$(echo $archive | sed -e 's/\(.*\)-src-\(.*\)\.tar\.bz2/\1-\2/' )
+	if [ ! -d $destdir ]; then
+		tar -xjf "$SRCDIR/$archive"
+	fi
+done
+
 #---------------------------------------------------------------------------------
 # Build and install devkit components
 #---------------------------------------------------------------------------------
 if [ -f $scriptdir/build-gcc.sh ]; then . $scriptdir/build-gcc.sh || { echo "Error building toolchain"; exit 1; }; cd $BUILDSCRIPTDIR; fi
 
+if [ "$BUILD_DKPRO_SKIP_TOOLS" != "1" ] && [ -f $scriptdir/build-tools.sh ]; then
+ . $scriptdir/build-tools.sh || { echo "Error building tools"; exit 1; }; cd $BUILDSCRIPTDIR;
+fi
 
-if [ "$BUILD_DKPRO_SKIP_CRTLS" != "1" ] && [ -f $scriptdir/build-crtls.sh ]; then
-  . $scriptdir/build-crtls.sh || { echo "Error building crtls & rules"; exit 1; }; cd $BUILDSCRIPTDIR;
+if [ "$BUILD_DKPRO_SKIP_LIBRARIES" != "1" ] && [ -f $scriptdir/build-libs.sh ]; then
+  . $scriptdir/build-libs.sh || { echo "Error building libraries"; exit 1; }; cd $BUILDSCRIPTDIR;
 fi
 
 cd $BUILDSCRIPTDIR
