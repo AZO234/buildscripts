@@ -1,0 +1,13 @@
+diff -uprN libctru-1.5.1/source/services/soc/soc_herror.c libctru-1.5.1_/source/services/soc/soc_herror.c
+--- libctru-1.5.1/source/services/soc/soc_herror.c	2019-01-02 08:48:50.000000000 +0900
++++ libctru-1.5.1_/source/services/soc/soc_herror.c	2020-02-05 06:44:44.984550000 +0900
+@@ -4,7 +4,7 @@
+ 
+ void herror(const char *s) {
+ 	if(s)
+-		fiprintf(stderr, "%s\n", hstrerror(h_errno));
+-	else
+ 		fiprintf(stderr, "%s: %s\n", s, hstrerror(h_errno));
++	else
++		fiprintf(stderr, "%s\n", hstrerror(h_errno));
+ }

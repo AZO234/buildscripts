@@ -14,6 +14,7 @@ cd $BUILDDIR
 mkdir -p rules
 cd rules
 tar -xvf $SRCDIR/devkitarm-rules-$DKARM_RULES_VER.tar.xz
+patch Makefile < $SRCDIR/Makefile_rules_arm.patch
 make install
 
 #---------------------------------------------------------------------------------
@@ -24,6 +25,7 @@ cd $BUILDDIR
 mkdir -p crtls
 cd crtls
 tar -xvf $SRCDIR/devkitarm-crtls-$DKARM_CRTLS_VER.tar.xz
+patch Makefile < $SRCDIR/Makefile_crtls_arm.patch
 make install
 
 cd $BUILDDIR/libgba-$LIBGBA_VER

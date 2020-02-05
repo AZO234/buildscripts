@@ -7,6 +7,7 @@ cd $BUILDDIR
 mkdir -p rules
 cd rules
 tar -xvf $SRCDIR/devkitppc-rules-$DKPPC_RULES_VER.tar.xz
+patch Makefile < $SRCDIR/Makefile_rules_ppc.patch
 make install
 
 cd $BUILDDIR/libogc-$LIBOGC_VER

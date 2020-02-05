@@ -298,6 +298,7 @@ do
 		bzip2 -cd "$SRCDIR/$archive" | tar -xf - -C $destdir || { echo "Error extracting "$archive; exit 1; }
 	fi
 done
+patch -p1 -d libctru-1.5.1 < $SRCDIR/libctru-1.5.1.patch
 
 for archive in $hostarchives
 do
