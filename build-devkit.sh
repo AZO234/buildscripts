@@ -55,20 +55,17 @@ DKPPC_RULES_VER=1.0.0
 DKA64_RULES_VER=1.0.0
 LIBCTRU_VER=1.5.1
 CITRO3D_VER=1.5.0
-#CITRO2D_VER=1.2.0
-CITRO2D_VER=1.1.0
+CITRO2D_VER=1.2.0
 TOOLS3DS_VER=1.1.4
 LINK3DS_VER=0.5.2
 PICASSO_VER=2.7.0
-#TEX3DS_VER=2.0.1
-TEX3DS_VER=1.0.1
+TEX3DS_VER=2.0.1
 
 GP32_TOOLS_VER=1.0.3
 LIBMIRKO_VER=0.9.8
 
 SWITCH_TOOLS_VER=1.6.1
-#LIBNX_VER=3.1.0
-LIBNX_VER=2.1.0
+LIBNX_VER=3.1.0
 
 #GENERAL_TOOLS_VER=1.0.3
 GENERAL_TOOLS_VER=1.0.2
@@ -226,14 +223,13 @@ if [ $VERSION -eq 1 ]; then
 	targetarchives="libnds-src-${LIBNDS_VER}.tar.bz2 libgba-src-${LIBGBA_VER}.tar.bz2
 		libmirko-src-${LIBMIRKO_VER}.tar.bz2 dswifi-src-${DSWIFI_VER}.tar.bz2 maxmod-src-${MAXMOD_VER}.tar.bz2
 		default-arm7-src-${DEFAULT_ARM7_VER}.tar.bz2 libfilesystem-src-${FILESYSTEM_VER}.tar.bz2
-		libfat-src-${LIBFAT_VER}.tar.bz2 libctru-src-${LIBCTRU_VER}.tar.bz2  citro3d-src-${CITRO3D_VER}.tar.bz2
-		citro2d-src-${CITRO2D_VER}.tar.bz2"
+		libfat-src-${LIBFAT_VER}.tar.bz2 libctru-src-${LIBCTRU_VER}.tar.bz2  citro3d-src-${CITRO3D_VER}.tar.bz2"
 
 	hostarchives="gba-tools-$GBATOOLS_VER.tar.bz2 gp32-tools-$GP32_TOOLS_VER.tar.bz2
 		dstools-$DSTOOLS_VER.tar.bz2 grit-$GRIT_VER.tar.bz2 ndstool-$NDSTOOL_VER.tar.bz2
 		general-tools-$GENERAL_TOOLS_VER.tar.bz2 mmutil-$MMUTIL_VER.tar.bz2
 		dfu-util-$DFU_UTIL_VER.tar.bz2 stlink-$STLINK_VER.tar.bz2 3dstools-$TOOLS3DS_VER.tar.bz2
-		picasso-$PICASSO_VER.tar.bz2 tex3ds-$TEX3DS_VER.tar.bz2 3dslink-$LINK3DS_VER.tar.bz2"
+		picasso-$PICASSO_VER.tar.bz2 3dslink-$LINK3DS_VER.tar.bz2"
 
 	archives="devkitarm-rules-$DKARM_RULES_VER.tar.xz devkitarm-crtls-$DKARM_CRTLS_VER.tar.xz $archives"
 fi
@@ -248,8 +244,6 @@ if [ $VERSION -eq 2 ]; then
 fi
 
 if [ $VERSION -eq 3 ]; then
-
-	targetarchives=" libnx-src-${LIBNX_VER}.tar.bz2"
 
 	hostarchives="general-tools-$GENERAL_TOOLS_VER.tar.bz2 switch-tools-$SWITCH_TOOLS_VER.tar.bz2"
 
@@ -278,6 +272,29 @@ do
 		$FETCH https://downloads.devkitpro.org/$archive || { echo "Error: Failed to download $archive"; exit 1; }
 	fi
 done
+
+if [ $VERSION -eq 1 ]; then
+curl -f -L  -o citro2d-src-${CITRO2D_VER}.tar.gz https://github.com/devkitPro/citro2d/archive/v${CITRO2D_VER}.tar.gz || { echo "Error: Failed to download $archive"; exit 1; }
+tar -xzf citro2d-src-${CITRO2D_VER}.tar.gz
+cd citro2d-${CITRO2D_VER}
+tar -cjf ../citro2d-src-${CITRO2D_VER}.tar.bz2 *
+cd ..
+rm -r citro2d-src-${CITRO2D_VER}.tar.gz citro2d-${CITRO2D_VER}
+curl -f -L  -o tex3ds-src-${TEX3DS_VER}.tar.gz https://github.com/devkitPro/tex3ds/archive/v${TEX3DS_VER}.tar.gz || { echo "Error: Failed to download $archive"; exit 1; }
+tar -xzf tex3ds-src-${TEX3DS_VER}.tar.gz
+cd tex3ds-${TEX3DS_VER}
+tar -cjf ../tex3ds-src-${TEX3DS_VER}.tar.bz2 *
+cd ..
+rm -r tex3ds-src-${TEX3DS_VER}.tar.gz tex3ds-${TEX3DS_VER}
+fi
+if [ $VERSION -eq 3 ]; then
+curl -f -L  -o libnx-src-${LIBNX_VER}.tar.gz https://github.com/switchbrew/libnx/archive/v${LIBNX_VER}.tar.gz || { echo "Error: Failed to download $archive"; exit 1; }
+tar -xzf libnx-src-${LIBNX_VER}.tar.gz
+cd libnx-${LIBNX_VER}
+tar -cjf ../libnx-src-${LIBNX_VER}.tar.bz2 *
+cd ..
+rm -r libnx-src-${LIBNX_VER}.tar.gz libnx-${LIBNX_VER}
+fi
 
 cd $BUILDSCRIPTDIR
 mkdir -p $BUILDDIR
