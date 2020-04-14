@@ -67,8 +67,7 @@ LIBMIRKO_VER=0.9.8
 SWITCH_TOOLS_VER=1.6.1
 LIBNX_VER=3.1.0
 
-#GENERAL_TOOLS_VER=1.0.3
-GENERAL_TOOLS_VER=1.0.2
+GENERAL_TOOLS_VER=1.0.3
 
 OSXMIN=${OSXMIN:-10.9}
 
@@ -223,13 +222,15 @@ if [ $VERSION -eq 1 ]; then
 	targetarchives="libnds-src-${LIBNDS_VER}.tar.bz2 libgba-src-${LIBGBA_VER}.tar.bz2
 		libmirko-src-${LIBMIRKO_VER}.tar.bz2 dswifi-src-${DSWIFI_VER}.tar.bz2 maxmod-src-${MAXMOD_VER}.tar.bz2
 		default-arm7-src-${DEFAULT_ARM7_VER}.tar.bz2 libfilesystem-src-${FILESYSTEM_VER}.tar.bz2
-		libfat-src-${LIBFAT_VER}.tar.bz2 libctru-src-${LIBCTRU_VER}.tar.bz2  citro3d-src-${CITRO3D_VER}.tar.bz2"
+		libfat-src-${LIBFAT_VER}.tar.bz2 libctru-src-${LIBCTRU_VER}.tar.bz2 citro3d-src-${CITRO3D_VER}.tar.bz2"
+	targetarchives_out="citro2d-src-${CITRO2D_VER}.tar.bz2"
 
 	hostarchives="gba-tools-$GBATOOLS_VER.tar.bz2 gp32-tools-$GP32_TOOLS_VER.tar.bz2
 		dstools-$DSTOOLS_VER.tar.bz2 grit-$GRIT_VER.tar.bz2 ndstool-$NDSTOOL_VER.tar.bz2
 		general-tools-$GENERAL_TOOLS_VER.tar.bz2 mmutil-$MMUTIL_VER.tar.bz2
 		dfu-util-$DFU_UTIL_VER.tar.bz2 stlink-$STLINK_VER.tar.bz2 3dstools-$TOOLS3DS_VER.tar.bz2
 		picasso-$PICASSO_VER.tar.bz2 3dslink-$LINK3DS_VER.tar.bz2"
+	hostarchives_out="tex3ds-$TEX3DS_VER.tar.bz2"
 
 	archives="devkitarm-rules-$DKARM_RULES_VER.tar.xz devkitarm-crtls-$DKARM_CRTLS_VER.tar.xz $archives"
 fi
@@ -238,14 +239,18 @@ if [ $VERSION -eq 2 ]; then
 
 	targetarchives="libogc-src-${LIBOGC_VER}.tar.bz2 libfat-src-${LIBFAT_VER}.tar.bz2"
 
-	hostarchives="gamecube-tools-$GAMECUBE_TOOLS_VER.tar.bz2 wiiload-$WIILOAD_VER.tar.bz2 general-tools-$GENERAL_TOOLS_VER.tar.bz2"
+	hostarchives="gamecube-tools-$GAMECUBE_TOOLS_VER.tar.bz2 wiiload-$WIILOAD_VER.tar.bz2"
+	hostarchives_out="general-tools-$GENERAL_TOOLS_VER.tar.bz2"
 
 	archives="binutils-${MN_BINUTILS_VER}.tar.bz2 devkitppc-rules-$DKPPC_RULES_VER.tar.xz $archives"
 fi
 
 if [ $VERSION -eq 3 ]; then
 
-	hostarchives="general-tools-$GENERAL_TOOLS_VER.tar.bz2 switch-tools-$SWITCH_TOOLS_VER.tar.bz2"
+	targetarchives_out="libnx-src-${LIBNX_VER}.tar.bz2"
+
+	hostarchives="switch-tools-$SWITCH_TOOLS_VER.tar.bz2"
+	hostarchives_out="general-tools-$GENERAL_TOOLS_VER.tar.bz2"
 
 fi
 
@@ -283,17 +288,23 @@ rm -r citro2d-src-${CITRO2D_VER}.tar.gz citro2d-${CITRO2D_VER}
 curl -f -L  -o tex3ds-src-${TEX3DS_VER}.tar.gz https://github.com/devkitPro/tex3ds/archive/v${TEX3DS_VER}.tar.gz || { echo "Error: Failed to download $archive"; exit 1; }
 tar -xzf tex3ds-src-${TEX3DS_VER}.tar.gz
 cd tex3ds-${TEX3DS_VER}
-tar -cjf ../tex3ds-src-${TEX3DS_VER}.tar.bz2 *
 cd ..
+tar -cjf tex3ds-src-${TEX3DS_VER}.tar.bz2 tex3ds-${TEX3DS_VER}
 rm -r tex3ds-src-${TEX3DS_VER}.tar.gz tex3ds-${TEX3DS_VER}
 fi
 if [ $VERSION -eq 3 ]; then
 curl -f -L  -o libnx-src-${LIBNX_VER}.tar.gz https://github.com/switchbrew/libnx/archive/v${LIBNX_VER}.tar.gz || { echo "Error: Failed to download $archive"; exit 1; }
 tar -xzf libnx-src-${LIBNX_VER}.tar.gz
 cd libnx-${LIBNX_VER}
-tar -cjf ../libnx-src-${LIBNX_VER}.tar.bz2 *
+tar ../-cjf libnx-src-${LIBNX_VER}.tar.bz2 *
 cd ..
 rm -r libnx-src-${LIBNX_VER}.tar.gz libnx-${LIBNX_VER}
+curl -f -L  -o general-tools-${GENERAL_TOOLS_VER}.tar.gz https://github.com/devkitPro/general-tools/archive/v${GENERAL_TOOLS_VER}.tar.gz || { echo "Error: Failed to download $archive"; exit 1; }
+tar -xzf general-tools-${GENERAL_TOOLS_VER}.tar.gz
+cd general-tools-${GENERAL_TOOLS_VER}
+cd ..
+tar -cjf general-tools-${GENERAL_TOOLS_VER}.tar.bz2 general-tools-${GENERAL_TOOLS_VER}
+rm -r general-tools-${GENERAL_TOOLS_VER}.tar.gz general-tools-${GENERAL_TOOLS_VER}
 fi
 
 cd $BUILDSCRIPTDIR
@@ -306,7 +317,7 @@ extract_and_patch newlib $NEWLIB_VER gz
 
 if [ $VERSION -eq 2 ]; then extract_and_patch binutils $MN_BINUTILS_VER bz2; fi
 
-for archive in $targetarchives
+for archive in $targetarchives $targetarchives_out
 do
 	destdir=$(echo $archive | sed -e 's/\(.*\)-src-\(.*\)\.tar\.bz2/\1-\2/' )
 	echo $destdir
@@ -317,7 +328,7 @@ do
 done
 patch -p1 -d libctru-1.5.1 < $SRCDIR/libctru-1.5.1.patch
 
-for archive in $hostarchives
+for archive in $hostarchives $hostarchives_out
 do
 	destdir=$(echo $archive | sed -e 's/\(.*\)-src-\(.*\)\.tar\.bz2/\1-\2/' )
 	if [ ! -d $destdir ]; then
