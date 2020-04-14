@@ -53,7 +53,7 @@ WIILOAD_VER=0.5.1
 DKPPC_RULES_VER=1.0.0
 
 DKA64_RULES_VER=1.0.0
-LIBCTRU_VER=1.5.1
+LIBCTRU_VER=1.6.0
 CITRO3D_VER=1.5.0
 CITRO2D_VER=1.2.0
 TOOLS3DS_VER=1.1.4
@@ -222,8 +222,8 @@ if [ $VERSION -eq 1 ]; then
 	targetarchives="libnds-src-${LIBNDS_VER}.tar.bz2 libgba-src-${LIBGBA_VER}.tar.bz2
 		libmirko-src-${LIBMIRKO_VER}.tar.bz2 dswifi-src-${DSWIFI_VER}.tar.bz2 maxmod-src-${MAXMOD_VER}.tar.bz2
 		default-arm7-src-${DEFAULT_ARM7_VER}.tar.bz2 libfilesystem-src-${FILESYSTEM_VER}.tar.bz2
-		libfat-src-${LIBFAT_VER}.tar.bz2 libctru-src-${LIBCTRU_VER}.tar.bz2 citro3d-src-${CITRO3D_VER}.tar.bz2"
-	targetarchives_out="citro2d-src-${CITRO2D_VER}.tar.bz2"
+		libfat-src-${LIBFAT_VER}.tar.bz2 citro3d-src-${CITRO3D_VER}.tar.bz2"
+	targetarchives_out="libctru-src-${LIBCTRU_VER}.tar.bz2 citro2d-src-${CITRO2D_VER}.tar.bz2"
 
 	hostarchives="gba-tools-$GBATOOLS_VER.tar.bz2 gp32-tools-$GP32_TOOLS_VER.tar.bz2
 		dstools-$DSTOOLS_VER.tar.bz2 grit-$GRIT_VER.tar.bz2 ndstool-$NDSTOOL_VER.tar.bz2
@@ -279,6 +279,12 @@ do
 done
 
 if [ $VERSION -eq 1 ]; then
+curl -f -L -o libctru-src-${LIBCTRU_VER}.tar.gz https://github.com/smealum/ctrulib/archive/v${LIBCTRU_VER}.tar.gz || { echo "Error: Failed to download $archive"; exit 1; }
+tar -xzf libctru-src-${LIBCTRU_VER}.tar.gz
+cd ctrulib-${LIBCTRU_VER}/libctru
+tar -cjf ../../libctru-src-${LIBCTRU_VER}.tar.bz2 *
+cd ../..
+rm -r libctru-src-${LIBCTRU_VER}.tar.gz ctrulib-${LIBCTRU_VER}
 curl -f -L -o citro2d-src-${CITRO2D_VER}.tar.gz https://github.com/devkitPro/citro2d/archive/v${CITRO2D_VER}.tar.gz || { echo "Error: Failed to download $archive"; exit 1; }
 tar -xzf citro2d-src-${CITRO2D_VER}.tar.gz
 cd citro2d-${CITRO2D_VER}
