@@ -227,10 +227,10 @@ if [ $VERSION -eq 1 ]; then
 
 	hostarchives="gba-tools-$GBATOOLS_VER.tar.bz2 gp32-tools-$GP32_TOOLS_VER.tar.bz2
 		dstools-$DSTOOLS_VER.tar.bz2 grit-$GRIT_VER.tar.bz2 ndstool-$NDSTOOL_VER.tar.bz2
-		general-tools-$GENERAL_TOOLS_VER.tar.bz2 mmutil-$MMUTIL_VER.tar.bz2
+		mmutil-$MMUTIL_VER.tar.bz2
 		dfu-util-$DFU_UTIL_VER.tar.bz2 stlink-$STLINK_VER.tar.bz2 3dstools-$TOOLS3DS_VER.tar.bz2
 		picasso-$PICASSO_VER.tar.bz2 3dslink-$LINK3DS_VER.tar.bz2"
-	hostarchives_out="tex3ds-$TEX3DS_VER.tar.bz2"
+	hostarchives_out="general-tools-$GENERAL_TOOLS_VER.tar.bz2 tex3ds-$TEX3DS_VER.tar.bz2"
 
 	archives="devkitarm-rules-$DKARM_RULES_VER.tar.xz devkitarm-crtls-$DKARM_CRTLS_VER.tar.xz $archives"
 fi
@@ -279,33 +279,35 @@ do
 done
 
 if [ $VERSION -eq 1 ]; then
-curl -f -L  -o citro2d-src-${CITRO2D_VER}.tar.gz https://github.com/devkitPro/citro2d/archive/v${CITRO2D_VER}.tar.gz || { echo "Error: Failed to download $archive"; exit 1; }
+curl -f -L -o citro2d-src-${CITRO2D_VER}.tar.gz https://github.com/devkitPro/citro2d/archive/v${CITRO2D_VER}.tar.gz || { echo "Error: Failed to download $archive"; exit 1; }
 tar -xzf citro2d-src-${CITRO2D_VER}.tar.gz
 cd citro2d-${CITRO2D_VER}
 tar -cjf ../citro2d-src-${CITRO2D_VER}.tar.bz2 *
 cd ..
 rm -r citro2d-src-${CITRO2D_VER}.tar.gz citro2d-${CITRO2D_VER}
-curl -f -L  -o tex3ds-src-${TEX3DS_VER}.tar.gz https://github.com/devkitPro/tex3ds/archive/v${TEX3DS_VER}.tar.gz || { echo "Error: Failed to download $archive"; exit 1; }
+curl -f -L -o tex3ds-src-${TEX3DS_VER}.tar.gz https://github.com/devkitPro/tex3ds/archive/v${TEX3DS_VER}.tar.gz || { echo "Error: Failed to download $archive"; exit 1; }
 tar -xzf tex3ds-src-${TEX3DS_VER}.tar.gz
 cd tex3ds-${TEX3DS_VER}
+./autogen.sh
 cd ..
 tar -cjf tex3ds-src-${TEX3DS_VER}.tar.bz2 tex3ds-${TEX3DS_VER}
 rm -r tex3ds-src-${TEX3DS_VER}.tar.gz tex3ds-${TEX3DS_VER}
 fi
 if [ $VERSION -eq 3 ]; then
-curl -f -L  -o libnx-src-${LIBNX_VER}.tar.gz https://github.com/switchbrew/libnx/archive/v${LIBNX_VER}.tar.gz || { echo "Error: Failed to download $archive"; exit 1; }
+curl -f -L -o libnx-src-${LIBNX_VER}.tar.gz https://github.com/switchbrew/libnx/archive/v${LIBNX_VER}.tar.gz || { echo "Error: Failed to download $archive"; exit 1; }
 tar -xzf libnx-src-${LIBNX_VER}.tar.gz
 cd libnx-${LIBNX_VER}
-tar ../-cjf libnx-src-${LIBNX_VER}.tar.bz2 *
+tar -cjf ../libnx-src-${LIBNX_VER}.tar.bz2 *
 cd ..
 rm -r libnx-src-${LIBNX_VER}.tar.gz libnx-${LIBNX_VER}
-curl -f -L  -o general-tools-${GENERAL_TOOLS_VER}.tar.gz https://github.com/devkitPro/general-tools/archive/v${GENERAL_TOOLS_VER}.tar.gz || { echo "Error: Failed to download $archive"; exit 1; }
+fi
+curl -f -L -o general-tools-${GENERAL_TOOLS_VER}.tar.gz https://github.com/devkitPro/general-tools/archive/v${GENERAL_TOOLS_VER}.tar.gz || { echo "Error: Failed to download $archive"; exit 1; }
 tar -xzf general-tools-${GENERAL_TOOLS_VER}.tar.gz
 cd general-tools-${GENERAL_TOOLS_VER}
+./autogen.sh
 cd ..
 tar -cjf general-tools-${GENERAL_TOOLS_VER}.tar.bz2 general-tools-${GENERAL_TOOLS_VER}
 rm -r general-tools-${GENERAL_TOOLS_VER}.tar.gz general-tools-${GENERAL_TOOLS_VER}
-fi
 
 cd $BUILDSCRIPTDIR
 mkdir -p $BUILDDIR
@@ -326,7 +328,10 @@ do
 		bzip2 -cd "$SRCDIR/$archive" | tar -xf - -C $destdir || { echo "Error extracting "$archive; exit 1; }
 	fi
 done
-patch -p1 -d libctru-1.5.1 < $SRCDIR/libctru-1.5.1.patch
+
+if [ $VERSION -eq 1 ]; then
+	patch -p1 -d libctru-1.5.1 < $SRCDIR/libctru-1.5.1.patch
+fi
 
 for archive in $hostarchives $hostarchives_out
 do
